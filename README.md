@@ -14,7 +14,7 @@ Here's how to get VoiceCraft up and running on your local machine use bash:
 
 **1. Clone the Repository:**
 ```
-git clone https://github.com/vikashkodati/hack-elevenlabs-aiaudio.git
+git clone https://github.com/Tushar365/VoiceCraft.git
 ```
 after the change the cd  
 ```
