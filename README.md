@@ -1,4 +1,5 @@
-"# VoiceCraft"
+# VoiceCraft
+
 https://lablab.ai/event/elevenlabs-ai-audio-challenge
 
 ## ✨ Features 
