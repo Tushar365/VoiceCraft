@@ -54,7 +54,7 @@ def main():
     # --- Image Upload ---
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
     if uploaded_file:
-        st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
+        st.image(uploaded_file, caption="Uploaded Image", width=200)
         st.session_state.source_data = process_image(uploaded_file.read())
 
     # --- User Query Input ---  (Moved up)
