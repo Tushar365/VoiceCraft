@@ -24,7 +24,7 @@ def freellm(model_name):
     try:
         model = ChatGroq(
             model=model_name,
-            temperature=0,
+            temperature=0.6,
             max_tokens=120,
             timeout=None,
             max_retries=2,
