@@ -39,8 +39,8 @@ def report_response(resource, model):
             #],
             temperature=0.7, #Slightly lower temperature for more focused response
             max_tokens=1000, #Increased max_tokens to match requirement
-            top_p=0.5,
-            stream=False,
+            
+            
             stop=None,
         )
         return completion.choices[0].message.content
