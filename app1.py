@@ -7,11 +7,7 @@ from tools.word2voice import generate_voice
 import os
 
 # --- Page Configuration ---
-st.set_page_config(
-    page_title="💬 VoiceCraft",
-    page_icon="🤖",
-    layout="wide",
-)
+st.set_page_config(page_title="💬 VoiceCraft", page_icon="🤖", layout="wide")
 
 # --- Funky Styling ---
 st.markdown(
@@ -48,6 +44,8 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+
+# --- Model Selection ---
 # --- Model Selection ---
 def choose_model():
     models = {
@@ -65,54 +63,35 @@ def choose_model():
     )
     return selected_model_id
 
-
 # --- Main App Function ---
 def main():
     st.title("Voicecraft 🤖🎤")
 
     model = choose_model()
+    selected_prompt_type = st.sidebar.radio("Select Prompt Type:", ["Chat", "Report"])  # Simplified
 
-    # --- Prompt Type Selection ---
-    prompt_types = {
-        "chat": "Chat",
-        "report": "Report"
-    }
-    selected_prompt_type = st.sidebar.radio("Select Prompt Type:", list(prompt_types.keys()), format_func=lambda x: prompt_types[x])
-
-    # --- Session State Initialization ---
-    if 'image_encoded' not in st.session_state:
-        st.session_state.image_encoded = None
-    if 'audio_result' not in st.session_state:
-        st.session_state.audio_result = None
+    # --- Session State ---
     if 'voice_enabled' not in st.session_state:
         st.session_state.voice_enabled = True
-
-    # --- Voice Tool Toggle ---
     st.sidebar.subheader("⚙️ Settings")
     st.session_state.voice_enabled = st.sidebar.checkbox("Enable Voice Output", value=True)
 
-    # --- Image Upload ---
+    # --- Image Upload and Processing ---
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
-    # --- Display the image ---
-    st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
+    if uploaded_file:  # Simplified condition
+        st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
 
-    if uploaded_file is not None:
-        with open("temp_image.jpg", "wb") as f:
-            f.write(uploaded_file.read())
-        image_path = "temp_image.jpg"
-
-        if st.session_state.image_encoded is None or st.session_state.image_encoded != image_path:
-            st.session_state.image_encoded = image_path
-            encoded_image = encode_image(image_path)
+        # Efficient image handling using session state
+        if 'image_encoded' not in st.session_state or st.session_state.image_encoded != uploaded_file:
+            st.session_state.image_encoded = uploaded_file  # Store the file object directly
+            bytes_data = uploaded_file.read() # Read bytes data directly from uploaded file
+            encoded_image = encode_image(bytes_data) # Pass bytes data directly
             st.session_state.source_data = vision(encoded_image)
-        else:
-            encoded_image = st.session_state.image_encoded
 
-        os.remove(image_path)
 
         # --- User Query Input (Conditional) ---
-        if selected_prompt_type == "chat":
+        if selected_prompt_type == "Chat":  # Consistent capitalization
             client_prompt = st.text_input("Write your query")
         else:
             client_prompt = None
@@ -120,21 +99,18 @@ def main():
         # --- Response Generation ---
         if st.button("Generate Response"):
             with st.spinner("Generating response..."):
-                if selected_prompt_type == "chat":
-                    text_result = chat_response(client_prompt=client_prompt, resource=st.session_state.source_data, model=model)
-                elif selected_prompt_type == "report":
-                    text_result = report_response(resource=st.session_state.source_data, model=model)
-                else:
-                    st.error("Invalid prompt type selected.")
-                    text_result = ""
+                try:  # Error handling
+                    if selected_prompt_type == "Chat":
+                        text_result = chat_response(client_prompt, st.session_state.source_data, model)
+                    else: # "Report"
+                        text_result = report_response(st.session_state.source_data, model)
+                    st.write(text_result)
+                    if st.session_state.voice_enabled:
+                        audio_result = generate_voice(text_result)
+                        st.audio(audio_result, format="audio/wav")
+                except Exception as e:  # Catch and display errors
+                    st.error(f"An error occurred: {e}")
 
-                if st.session_state.voice_enabled:
-                    st.session_state.audio_result = generate_voice(text_result)
-
-            st.write(text_result)
-
-            if st.session_state.audio_result and st.session_state.voice_enabled:
-                st.audio(st.session_state.audio_result, format="audio/wav")
 
 
 
