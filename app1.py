@@ -36,7 +36,7 @@ def choose_model():
     
 # --- Image Handling ---
 def process_image(image_bytes):
-    encoded_image = encode_image(image_bytes)
+    
     return vision(encoded_image)
 
 # --- Main App ---
@@ -86,4 +86,5 @@ def main():
 
 
 if __name__ == "__main__":
+    encoded_image = encode_image(image_bytes)
     main()
