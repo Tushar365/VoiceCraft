@@ -1,47 +1,26 @@
 import streamlit as st
+import os
 from tools.encodding import encode_image
 from LLM.vision import vision
 from prompt.prompt_chat import chat_response
 from prompt.prompt_report import report_response
 from tools.word2voice import generate_voice
-import os
 
 # --- Page Configuration ---
 st.set_page_config(page_title="💬 VoiceCraft", page_icon="🤖", layout="wide")
 
-# --- Funky Styling ---
+# --- Styling ---
 st.markdown(
     """
     <style>
-    body {
-        font-family: 'Arial', sans-serif;
-        background-color: #f4f4f4; 
-    }
-    .stApp {
-        padding: 2rem;
-    }
-    .stButton>button {
-        background-color: #007bff; 
-        color: white;
-        padding: 0.8rem 1.5rem;
-        border: none;
-        border-radius: 5px;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: background-color 0.3s; 
-    }
-    .stButton>button:hover {
-        background-color: #0056b3; 
-    }
-    .stTextArea textarea {
-        padding: 1rem;
-        border-radius: 5px;
-        font-size: 1rem;
-    }
-    .demo-image {
-        cursor: pointer;
-        margin: 5px;
-    }
+    body {font-family:'Arial', sans-serif; background-color:#f4f4f4;}
+    .stApp {padding:2rem;}
+    .stButton>button {background-color:#007bff;color:white;padding:.8rem 1.5rem;
+                      border:none;border-radius:5px;font-size:1rem;cursor:pointer;
+                      transition:background-color .3s;}
+    .stButton>button:hover {background-color:#0056b3;}
+    .stTextArea textarea {padding:1rem; border-radius:5px; font-size:1rem;}
+    .demo-image {cursor:pointer; margin:5px;}  /* Unused, consider removing */
     </style>
     """,
     unsafe_allow_html=True,
@@ -55,94 +34,78 @@ def choose_model():
         "mixtral-8x7b-32768": "🧠 Mixtral 8x7B",
         "whisper-large-v3": "👂 Whisper Large v3",
     }
-
-    st.sidebar.title("🤖 Choose Your AI")
-    selected_model_id = st.sidebar.selectbox(
-        "Select a Model:", 
-        list(models.keys()), 
-        format_func=lambda x: models[x] 
-    )
+    selected_model_id = st.sidebar.selectbox("Select a Model:", list(models.keys()), format_func=models.get)
     return selected_model_id
 
-# --- Function to handle demo image click ---
-def handle_demo_image(image_path):
-    st.session_state.image_encoded = image_path
-    with open(image_path, "rb") as f:
-        bytes_data = f.read()
-        encoded_image = encode_image(bytes_data)
-        st.session_state.source_data = vision(encoded_image)
 
-        st.image(image_path, caption="Selected Demo Image", width=200)
+# --- Image Handling ---
+def process_image(image_bytes):
+    encoded_image = encode_image(image_bytes)
+    return vision(encoded_image)
 
-# --- Main App Function ---
+
+# --- Main App ---
 def main():
     st.title("Voicecraft 🤖🎤")
 
     model = choose_model()
     selected_prompt_type = st.sidebar.radio("Select Prompt Type:", ["Chat", "Report"])
 
-    # --- Session State ---
-    if 'voice_enabled' not in st.session_state:
-        st.session_state.voice_enabled = True
+    # --- Settings ---
     st.sidebar.subheader("⚙️ Settings")
-    st.session_state.voice_enabled = st.sidebar.checkbox("Enable Voice Output", value=True)
+    voice_enabled = st.sidebar.checkbox("Enable Voice Output", value=True)
 
-    # --- Demo Images Section ---
+    # --- Demo Images ---
     st.subheader("Or Choose a Demo Image:")
-
-    # Get the absolute path to the directory of your script
-    script_dir = os.path.dirname(os.path.abspath(__file__)) 
+    script_dir = os.path.dirname(os.path.abspath(__file__))
     demo_image_dir = os.path.join(script_dir, "demo_images")
 
     demo_images = [
-        os.path.join(demo_image_dir, f)
-        for f in os.listdir(demo_image_dir)
-        if os.path.isfile(os.path.join(demo_image_dir, f))
+        os.path.join(demo_image_dir, f) for f in os.listdir(demo_image_dir) if os.path.isfile(os.path.join(demo_image_dir, f))
     ]
 
-    cols = st.columns(4)
+
+    cols = st.columns(4)  # Adjusted for better responsiveness
     for i, image_path in enumerate(demo_images):
         with cols[i % 4]:
             if os.path.exists(image_path):
-                st.markdown(f'<img src="{image_path}" alt="Demo Image" style="width: 100%; cursor: pointer;">', unsafe_allow_html=True)
+                st.image(image_path, caption="", use_column_width=True) #use_column_width for responsiveness
                 if st.button("Select", key=f"demo_button_{i}"):
-                    handle_demo_image(image_path)
-            else:
-                st.error(f"Image not found: {image_path}")
-    # --- Image Upload and Processing ---
+                    with open(image_path, "rb") as f:
+                        image_bytes = f.read()
+                        st.session_state.source_data = process_image(image_bytes)
+
+
+    # --- Image Upload ---
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
     if uploaded_file:
-        # Display the image with reduced size
-        st.image(uploaded_file, caption="Uploaded Image", width=200) 
+        st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
+        st.session_state.source_data = process_image(uploaded_file.read())
 
-        if 'image_encoded' not in st.session_state or st.session_state.image_encoded != uploaded_file:
-            st.session_state.image_encoded = uploaded_file
-            bytes_data = uploaded_file.read()
-            encoded_image = encode_image(bytes_data)
-            st.session_state.source_data = vision(encoded_image)
 
-        # --- User Query Input (Conditional) ---
-        if selected_prompt_type == "Chat":
-            client_prompt = st.text_input("Write your query")
-        else:
-            client_prompt = None
 
-        # --- Response Generation ---
-        if st.button("Generate Response"):
-            with st.spinner("Generating response..."):
-                try:
-                    if selected_prompt_type == "Chat":
-                        text_result = chat_response(client_prompt, st.session_state.source_data, model)
-                    else:
-                        text_result = report_response(st.session_state.source_data, model)
-                    st.write(text_result)
-                    if st.session_state.voice_enabled:
-                        audio_result = generate_voice(text_result)
-                        st.audio(audio_result, format="audio/wav")
-                except Exception as e:
-                    st.error(f"An error occurred: {e}")
+    # --- User Query Input ---
+    client_prompt = st.text_input("Write your query") if selected_prompt_type == "Chat" else None
 
-# --- Run the app ---
+    # --- Response Generation ---
+    if st.button("Generate Response"):
+        with st.spinner("Generating response..."):
+            try:
+                if selected_prompt_type == "Chat":
+                    response_text = chat_response(client_prompt, st.session_state.source_data, model)
+                else:
+                    response_text = report_response(st.session_state.source_data, model)
+
+                st.write(response_text)
+
+                if voice_enabled:
+                    audio_result = generate_voice(response_text)
+                    st.audio(audio_result, format="audio/wav")
+
+            except Exception as e:
+                st.error(f"An error occurred: {e}")
+
+
 if __name__ == "__main__":
     main()
