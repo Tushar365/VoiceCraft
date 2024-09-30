@@ -25,7 +25,7 @@ def report_response(resource, model):
         },
         {
             "role": "user",
-            "content": "your answers must be suitable for tts tools within 1000 tokens"
+            "content": "your answers must be suitable for tts tools avoid * within 1000 tokens"
         },
         {
             "role": "user",
