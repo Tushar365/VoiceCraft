@@ -90,7 +90,7 @@ def main():
     # --- Demo Images Section ---
     st.subheader("Or Choose a Demo Image:")
     # Construct the correct path relative to your Streamlit script
-    demo_image_dir = os.path.join("VoiceCraft", "demo_images")
+    demo_image_dir = "demo_images" 
     demo_images = [os.path.join(demo_image_dir, f) for f in os.listdir(demo_image_dir) if os.path.isfile(os.path.join(demo_image_dir, f))]
     cols = st.columns(4) 
     for i, image_path in enumerate(demo_images):
