@@ -4,13 +4,11 @@ import os
 
 load_dotenv()
 
-def chat_response(client_prompt, resource, model="groq/chat/orca-mini-v3"):
+def chat_response(client_prompt,encoded_image):
     """Generates an LLM chat response based on user prompt and resource data.
 
     Args:
         client_prompt: The user's question or prompt.
-        resource: Contextual data for the LLM (string).
-        model: The Groq chat model to use.
         max_tokens: Maximum number of tokens in the response.
         temperature: Controls randomness of the response.
 
@@ -19,14 +17,29 @@ def chat_response(client_prompt, resource, model="groq/chat/orca-mini-v3"):
     """
     try:
         client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+         # Construct the image URL using the data protocol
+        image_url = f"data:image/jpeg;base64,{encoded_image}"
         completion = client.chat.completions.create(
-            model=model,
+            model="llama-3.2-11b-vision-preview",
+
             messages=[
-                {"role": "system", "content": f"You are a helpful and informative chat assistant specializing in satellite image analysis. Use the provided resource data to answer user questions.  Your responses should be detailed, suitable for text-to-speech, and within 200 tokens."},
-                {"role": "user", "content": f"Resource Data:\n\n{resource}"}, # Provide resource data separately
-                {"role": "user", "content": client_prompt}  # User's actual question
-            ],
-            temperature=0.7,
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": "answer the following question based upon the image in 200 tokens. question: {client_prompt}"
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": image_url
+                        }
+                    }
+                ]
+            }
+        ],
+            temperature=1,
             max_tokens=200,
         )
         return completion.choices[0].message.content
