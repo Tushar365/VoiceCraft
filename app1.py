@@ -94,7 +94,7 @@ def main():
     cols = st.columns(4)  # Create 4 columns for images
     for i, image_path in enumerate(demo_images):
         with cols[i % 4]:  # Cycle through columns
-            st.image(image_path, caption="", use_column_width=True, className="demo-image")
+            st.image(image_path, caption="", use_column_width=True, className="demo_images")
             if st.button("Select", key=f"demo_button_{i}"):
                 handle_demo_image(image_path)
 
