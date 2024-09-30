@@ -89,16 +89,22 @@ def main():
 
     # --- Demo Images Section ---
     st.subheader("Or Choose a Demo Image:")
-    # Construct the correct path relative to your Streamlit script
     demo_image_dir = "demo_images" 
     demo_images = [os.path.join(demo_image_dir, f) for f in os.listdir(demo_image_dir) if os.path.isfile(os.path.join(demo_image_dir, f))]
+    
+    # **DEBUGGING: Print image paths to the console**
+    print("Demo Image Paths:", demo_images) 
+    
     cols = st.columns(4) 
     for i, image_path in enumerate(demo_images):
-        with cols[i % 4]: 
-            st.image(image_path, caption="", use_column_width=True, className="demo-image")
-            if st.button("Select", key=f"demo_button_{i}"):
-                handle_demo_image(image_path)
-
+        with cols[i % 4]:
+            # **DEBUGGING: Check if the file exists before calling st.image** 
+            if os.path.exists(image_path):
+                st.image(image_path, caption="", use_column_width=True, className="demo-image")
+                if st.button("Select", key=f"demo_button_{i}"):
+                    handle_demo_image(image_path)
+            else:
+                st.error(f"Image not found: {image_path}")
     # --- Image Upload and Processing ---
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
