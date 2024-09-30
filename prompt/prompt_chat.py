@@ -28,7 +28,7 @@ def chat_response(client_prompt, resource, model="groq/chat/orca-mini-v3"):
             ],
             temperature=1,
             max_tokens=200,
-            top_p=1,
+            top_p=0.5,
             stream=False,
             stop=None,
         )
