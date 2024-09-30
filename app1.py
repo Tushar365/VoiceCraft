@@ -6,9 +6,6 @@ from prompt.prompt_chat import chat_response
 from prompt.prompt_report import report_response
 from tools.word2voice import generate_voice
 
-# --- Page Configuration ---
-st.set_page_config(page_title="💬 VoiceCraft", page_icon="🤖", layout="wide")
-
 # --- Styling ---
 st.markdown(
     """
@@ -43,7 +40,6 @@ def process_image(image_bytes):
     encoded_image = encode_image(image_bytes)
     return vision(encoded_image)
 
-
 # --- Main App ---
 def main():
     st.title("Voicecraft 🤖🎤")
@@ -55,40 +51,16 @@ def main():
     st.sidebar.subheader("⚙️ Settings")
     voice_enabled = st.sidebar.checkbox("Enable Voice Output", value=True)
 
-    # --- Demo Images ---
-    st.subheader("Or Choose a Demo Image:")
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    demo_image_dir = os.path.join(script_dir, "demo_images")
-
-    demo_images = [
-        os.path.join(demo_image_dir, f) for f in os.listdir(demo_image_dir) if os.path.isfile(os.path.join(demo_image_dir, f))
-    ]
-
-
-    cols = st.columns(4)  # Adjusted for better responsiveness
-    for i, image_path in enumerate(demo_images):
-        with cols[i % 4]:
-            if os.path.exists(image_path):
-                st.image(image_path, caption="", use_column_width=True) #use_column_width for responsiveness
-                if st.button("Select", key=f"demo_button_{i}"):
-                    with open(image_path, "rb") as f:
-                        image_bytes = f.read()
-                        st.session_state.source_data = process_image(image_bytes)
-
-
     # --- Image Upload ---
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
-
     if uploaded_file:
         st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
         st.session_state.source_data = process_image(uploaded_file.read())
 
-
-
-    # --- User Query Input ---
+    # --- User Query Input ---  (Moved up)
     client_prompt = st.text_input("Write your query") if selected_prompt_type == "Chat" else None
 
-    # --- Response Generation ---
+    # --- Response Generation ---  (Moved up)
     if st.button("Generate Response"):
         with st.spinner("Generating response..."):
             try:
@@ -105,6 +77,28 @@ def main():
 
             except Exception as e:
                 st.error(f"An error occurred: {e}")
+
+
+    # --- Demo Images --- (Moved down)
+    st.markdown("---") # Separator to visually distinguish demo section
+    st.subheader("Or Choose a Demo Image:")
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    demo_image_dir = os.path.join(script_dir, "demo_images")
+
+    demo_images = [
+        os.path.join(demo_image_dir, f) for f in os.listdir(demo_image_dir) if os.path.isfile(os.path.join(demo_image_dir, f))
+    ]
+
+    cols = st.columns(4)  # 4 columns for smaller, organized display
+    for i, image_path in enumerate(demo_images):
+        with cols[i % 4]:
+            if os.path.exists(image_path):
+                st.image(image_path, width=100, caption="") # Smaller image display
+                if st.button("Select", key=f"demo_button_{i}"):
+                    with open(image_path, "rb") as f:
+                        image_bytes = f.read()
+                        st.session_state.source_data = process_image(image_bytes)
+
 
 
 if __name__ == "__main__":
