@@ -4,7 +4,7 @@ import os
 
 load_dotenv()
 
-def report_response(resource, model="groq/chat/orca-mini-v3"):
+def report_response(resource, model):
     """Gets an LLM-generated report from resource data.
 
     Args:
@@ -18,10 +18,24 @@ def report_response(resource, model="groq/chat/orca-mini-v3"):
         client = Groq(api_key=os.getenv("GROQ_API_KEY"))
         completion = client.chat.completions.create(
             model=model,
-            messages=[
-                {"role": "system", "content": "You are a talented satellite image analyst. Analyze the provided data thoroughly and generate a detailed report suitable for text-to-speech, within 1000 tokens."},  # Combined instructions into system role
-                {"role": "user", "content": f"Analyze:\n\n{resource}"} #Simplified user prompt
-            ],
+               messages=[
+        {
+            "role": "assistant",
+            "content": "You are a talented satellite image analyst. Analyze the provided data thoroughly and generate a detailed report suitable for text-to-speech, within 1000 tokens."
+        },
+        {
+            "role": "user",
+            "content": "your answers must be suitable for tts tools within 1000 tokens"
+        },
+        {
+            "role": "user",
+            "content": f"Analyze:\n\n{resource}"
+        }
+    ],
+            #messages=[
+            #    {"role": "system", "content": "You are a talented satellite image analyst. Analyze the provided data thoroughly and generate a detailed report suitable for text-to-speech, within 1000 tokens."},  # Combined instructions into system role
+            #    {"role": "user", "content": f"Analyze:\n\n{resource}"} #Simplified user prompt
+            #],
             temperature=0.7, #Slightly lower temperature for more focused response
             max_tokens=1000, #Increased max_tokens to match requirement
             top_p=1,
