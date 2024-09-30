@@ -67,7 +67,7 @@ def main():
         with st.spinner("Generating response..."):
             try:
                 if selected_prompt_type == "Chat":
-                    encoded_image = encode_image(image_bytes)
+                    encoded_image = encode_image(uploaded_file.read())
                     response_text = chat_response(client_prompt,encoded_image)
                 else:
                     response_text = report_response(st.session_state.source_data, model)
