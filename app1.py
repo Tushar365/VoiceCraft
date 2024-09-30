@@ -67,13 +67,17 @@ def main():
                 with open(image_path, "rb") as f:
                     image_bytes = f.read()
                     st.session_state.source_data = process_image(image_bytes)
+                    # Display the selected demo image
+                    demo_image_placeholder.image(image_path, caption="Selected Demo Image", width=300)
 
 
     # --- Image Upload ---
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
     if uploaded_file:
-        st.image(uploaded_file, caption="Uploaded Image", width=200)
+        st.image(uploaded_file, caption="Uploaded Image", width=300)
         st.session_state.source_data = process_image(uploaded_file.read())
+        demo_image_placeholder.empty() # Clear demo image if a file is uploaded
+
 
     # --- User Query Input ---  (Moved up)
     client_prompt = st.text_input("Write your query") if selected_prompt_type == "Chat" else None
