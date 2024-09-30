@@ -78,7 +78,8 @@ def main():
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
     if uploaded_file:
-        st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
+        # Display the image with reduced size
+        st.image(uploaded_file, caption="Uploaded Image", width=200) 
 
         if 'image_encoded' not in st.session_state or st.session_state.image_encoded != uploaded_file:
             st.session_state.image_encoded = uploaded_file
