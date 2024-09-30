@@ -59,7 +59,7 @@ def main():
         st.session_state.source_data = process_image(uploaded_file.read())
         
 
-
+    encoded_image=encode_image(uploaded_file.read())
     # --- User Query Input ---  
     client_prompt = st.text_input("Write your query") if selected_prompt_type == "Chat" else None
 
@@ -68,7 +68,7 @@ def main():
         with st.spinner("Generating response..."):
             try:
                 if selected_prompt_type == "Chat":
-                    response_text = chat_response(client_prompt, st.session_state.source_data, model)
+                    response_text = chat_response(client_prompt,encoded_image)
                 else:
                     response_text = report_response(st.session_state.source_data, model)
 
