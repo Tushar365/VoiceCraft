@@ -27,15 +27,16 @@ def chat_response(client_prompt,encoded_image):
                 "role": "user",
                 "content": [
                     {
-                        "type": "text",
-                        "text": "answer the following question based upon the image in 200 tokens. question: {client_prompt}"
-                    },
-                    {
                         "type": "image_url",
                         "image_url": {
                             "url": image_url
-                        }
-                    }
+                    }}
+                    {
+                        "type": "text",
+                        "text": "answer the following question based upon the image in 200 tokens. question: {client_prompt}"
+                    },
+                   
+                    
                 ]
             }
         ],
