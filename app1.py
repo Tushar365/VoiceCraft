@@ -36,7 +36,7 @@ def choose_model():
     
 # --- Image Handling ---
 def process_image(image_bytes):
-    
+    encoded_image = encode_image(image_bytes)
     return vision(encoded_image)
 
 # --- Main App ---
@@ -68,6 +68,7 @@ def main():
         with st.spinner("Generating response..."):
             try:
                 if selected_prompt_type == "Chat":
+                    encoded_image = encode_image(image_bytes)
                     response_text = chat_response(client_prompt,encoded_image)
                 else:
                     response_text = report_response(st.session_state.source_data, model)
@@ -86,5 +87,4 @@ def main():
 
 
 if __name__ == "__main__":
-    encoded_image = encode_image(image_bytes)
     main()
