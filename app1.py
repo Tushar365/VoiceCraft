@@ -51,6 +51,24 @@ def main():
     st.sidebar.subheader("⚙️ Settings")
     voice_enabled = st.sidebar.checkbox("Enable Voice Output", value=True)
 
+    # --- Demo Images in Sidebar ---
+    st.sidebar.subheader("Or Choose a Demo Image:")
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    demo_image_dir = os.path.join(script_dir, "demo_images")
+
+    demo_images = [
+        os.path.join(demo_image_dir, f) for f in os.listdir(demo_image_dir) if os.path.isfile(os.path.join(demo_image_dir, f))
+    ]
+
+    for i, image_path in enumerate(demo_images): #No need for columns now
+        if os.path.exists(image_path):
+            st.sidebar.image(image_path, width=100, caption="")
+            if st.sidebar.button("Select", key=f"demo_button_{i}"):
+                with open(image_path, "rb") as f:
+                    image_bytes = f.read()
+                    st.session_state.source_data = process_image(image_bytes)
+
+
     # --- Image Upload ---
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
     if uploaded_file:
@@ -79,26 +97,7 @@ def main():
                 st.error(f"An error occurred: {e}")
 
 
-    # --- Demo Images --- (Moved down)
-    st.markdown("---") # Separator to visually distinguish demo section
-    st.subheader("Or Choose a Demo Image:")
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    demo_image_dir = os.path.join(script_dir, "demo_images")
-
-    demo_images = [
-        os.path.join(demo_image_dir, f) for f in os.listdir(demo_image_dir) if os.path.isfile(os.path.join(demo_image_dir, f))
-    ]
-
-    cols = st.columns(4)  # 4 columns for smaller, organized display
-    for i, image_path in enumerate(demo_images):
-        with cols[i % 4]:
-            if os.path.exists(image_path):
-                st.image(image_path, width=100, caption="") # Smaller image display
-                if st.button("Select", key=f"demo_button_{i}"):
-                    with open(image_path, "rb") as f:
-                        image_bytes = f.read()
-                        st.session_state.source_data = process_image(image_bytes)
-
+    
 
 
 if __name__ == "__main__":
