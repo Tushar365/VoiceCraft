@@ -38,6 +38,10 @@ st.markdown(
         border-radius: 5px;
         font-size: 1rem;
     }
+    .demo-image {
+        cursor: pointer;
+        margin: 5px;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -60,6 +64,15 @@ def choose_model():
     )
     return selected_model_id
 
+# --- Function to handle demo image click ---
+def handle_demo_image(image_path):
+    st.session_state.image_encoded = image_path
+    with open(image_path, "rb") as f:
+        bytes_data = f.read()
+        encoded_image = encode_image(bytes_data)
+        st.session_state.source_data = vision(encoded_image)
+
+        st.image(image_path, caption="Selected Demo Image", width=200)
 
 # --- Main App Function ---
 def main():
@@ -73,6 +86,18 @@ def main():
         st.session_state.voice_enabled = True
     st.sidebar.subheader("⚙️ Settings")
     st.session_state.voice_enabled = st.sidebar.checkbox("Enable Voice Output", value=True)
+
+    # --- Demo Images Section ---
+    st.subheader("Or Choose a Demo Image:")
+    demo_image_dir = "demo_images" # Replace with your actual directory
+    demo_images = [os.path.join(demo_image_dir, f) for f in os.listdir(demo_image_dir) if os.path.isfile(os.path.join(demo_image_dir, f))]
+    cols = st.columns(4)  # Create 4 columns for images
+    for i, image_path in enumerate(demo_images):
+        with cols[i % 4]:  # Cycle through columns
+            st.image(image_path, caption="", use_column_width=True, className="demo-image")
+            if st.button("Select", key=f"demo_button_{i}"):
+                handle_demo_image(image_path)
+
 
     # --- Image Upload and Processing ---
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
