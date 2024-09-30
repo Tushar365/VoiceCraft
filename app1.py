@@ -94,6 +94,9 @@ def main():
     # --- Image Upload ---
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
+    # --- Display the image ---
+    st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
+
     if uploaded_file is not None:
         with open("temp_image.jpg", "wb") as f:
             f.write(uploaded_file.read())
