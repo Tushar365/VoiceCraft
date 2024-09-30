@@ -38,14 +38,11 @@ st.markdown(
         border-radius: 5px;
         font-size: 1rem;
     }
-    /* ... other styles if needed ... */
     </style>
     """,
     unsafe_allow_html=True,
 )
 
-
-# --- Model Selection ---
 # --- Model Selection ---
 def choose_model():
     models = {
@@ -63,12 +60,13 @@ def choose_model():
     )
     return selected_model_id
 
+
 # --- Main App Function ---
 def main():
     st.title("Voicecraft 🤖🎤")
 
     model = choose_model()
-    selected_prompt_type = st.sidebar.radio("Select Prompt Type:", ["Chat", "Report"])  # Simplified
+    selected_prompt_type = st.sidebar.radio("Select Prompt Type:", ["Chat", "Report"])
 
     # --- Session State ---
     if 'voice_enabled' not in st.session_state:
@@ -79,19 +77,17 @@ def main():
     # --- Image Upload and Processing ---
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
-    if uploaded_file:  # Simplified condition
+    if uploaded_file:
         st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
 
-        # Efficient image handling using session state
         if 'image_encoded' not in st.session_state or st.session_state.image_encoded != uploaded_file:
-            st.session_state.image_encoded = uploaded_file  # Store the file object directly
-            bytes_data = uploaded_file.read() # Read bytes data directly from uploaded file
-            encoded_image = encode_image(bytes_data) # Pass bytes data directly
+            st.session_state.image_encoded = uploaded_file
+            bytes_data = uploaded_file.read()
+            encoded_image = encode_image(bytes_data)
             st.session_state.source_data = vision(encoded_image)
 
-
         # --- User Query Input (Conditional) ---
-        if selected_prompt_type == "Chat":  # Consistent capitalization
+        if selected_prompt_type == "Chat":
             client_prompt = st.text_input("Write your query")
         else:
             client_prompt = None
@@ -99,20 +95,17 @@ def main():
         # --- Response Generation ---
         if st.button("Generate Response"):
             with st.spinner("Generating response..."):
-                try:  # Error handling
+                try:
                     if selected_prompt_type == "Chat":
                         text_result = chat_response(client_prompt, st.session_state.source_data, model)
-                    else: # "Report"
+                    else:
                         text_result = report_response(st.session_state.source_data, model)
                     st.write(text_result)
                     if st.session_state.voice_enabled:
                         audio_result = generate_voice(text_result)
                         st.audio(audio_result, format="audio/wav")
-                except Exception as e:  # Catch and display errors
+                except Exception as e:
                     st.error(f"An error occurred: {e}")
-
-
-
 
 # --- Run the app ---
 if __name__ == "__main__":
