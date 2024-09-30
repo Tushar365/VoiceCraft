@@ -104,7 +104,7 @@ def main():
     for i, image_path in enumerate(demo_images):
         with cols[i % 4]:
             if os.path.exists(image_path):
-                st.image(image_path, caption="", use_column_width=True, className="demo-image")
+                st.markdown(f'<img src="{image_path}" alt="Demo Image" style="width: 100%; cursor: pointer;">', unsafe_allow_html=True)
                 if st.button("Select", key=f"demo_button_{i}"):
                     handle_demo_image(image_path)
             else:
