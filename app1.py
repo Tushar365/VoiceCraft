@@ -83,7 +83,7 @@ def main():
     client_prompt = st.text_input("Write your query") if selected_prompt_type == "Chat" else None
 
     # --- Response Generation ---  (Moved up)
-   if st.button("Generate Response"):
+    if st.button("Generate Response"):
         with st.spinner("Generating response..."):
             try:
                 if selected_prompt_type == "Chat":
