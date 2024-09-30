@@ -55,7 +55,8 @@ def main():
     # --- Settings ---
     st.sidebar.subheader("⚙️ Settings")
     voice_enabled = st.sidebar.checkbox("Enable Voice Output", value=True)
-
+    
+    demo_image_placeholder = st.empty()
     # --- Demo Images in Sidebar ---
     st.sidebar.subheader("Or Choose a Demo Image:")
     script_dir = os.path.dirname(os.path.abspath(__file__))
