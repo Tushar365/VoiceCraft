@@ -33,11 +33,31 @@ def choose_model():
     }
     selected_model_id = st.sidebar.selectbox("Select a Model:", list(models.keys()), format_func=models.get)
     return selected_model_id
-    
+
+def encode_image(image_bytes):  # More robust encoding
+    try:
+        from PIL import Image
+        from io import BytesIO
+        import base64
+
+        image = Image.open(BytesIO(image_bytes))
+        buffered = BytesIO()
+        image.save(buffered, format="JPEG") # Ensure JPEG format
+        img_str = base64.b64encode(buffered.getvalue()).decode()
+        return img_str
+    except Exception as e:
+        st.error(f"Image encoding error: {e}")
+        return None
+
 # --- Image Handling ---
 def process_image(image_bytes):
     encoded_image = encode_image(image_bytes)
-    return vision(encoded_image)
+    if encoded_image: # Check if encoding succeeded
+        st.session_state.encoded_image = encoded_image # Store encoded image
+        return vision(encoded_image) 
+    else:
+        return None
+
 
 # --- Main App ---
 def main():
@@ -63,12 +83,18 @@ def main():
     client_prompt = st.text_input("Write your query") if selected_prompt_type == "Chat" else None
 
     # --- Response Generation ---  (Moved up)
-    if st.button("Generate Response"):
+   if st.button("Generate Response"):
         with st.spinner("Generating response..."):
             try:
                 if selected_prompt_type == "Chat":
-                    encoded_image = encode_image(uploaded_file.read())
-                    response_text = chat_response(client_prompt,encoded_image)
+                    if "encoded_image" not in st.session_state:
+                        st.error("Please upload an image first.")
+                    else:
+                        encoded_image = st.session_state.encoded_image # Use stored encoded image
+                        response_text = chat_response(client_prompt, encoded_image)
+
+                        # ... (rest of the response handling, voice, etc.)
+
                 else:
                     response_text = report_response(st.session_state.source_data, model)
 
