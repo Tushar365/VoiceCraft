@@ -89,16 +89,20 @@ def main():
 
     # --- Demo Images Section ---
     st.subheader("Or Choose a Demo Image:")
-    demo_image_dir = "demo_images" 
-    demo_images = [os.path.join(demo_image_dir, f) for f in os.listdir(demo_image_dir) if os.path.isfile(os.path.join(demo_image_dir, f))]
-    
-    # **DEBUGGING: Print image paths to the console**
-    print("Demo Image Paths:", demo_images) 
-    
-    cols = st.columns(4) 
+
+    # Get the absolute path to the directory of your script
+    script_dir = os.path.dirname(os.path.abspath(__file__)) 
+    demo_image_dir = os.path.join(script_dir, "demo_images")
+
+    demo_images = [
+        os.path.join(demo_image_dir, f)
+        for f in os.listdir(demo_image_dir)
+        if os.path.isfile(os.path.join(demo_image_dir, f))
+    ]
+
+    cols = st.columns(4)
     for i, image_path in enumerate(demo_images):
         with cols[i % 4]:
-            # **DEBUGGING: Check if the file exists before calling st.image** 
             if os.path.exists(image_path):
                 st.image(image_path, caption="", use_column_width=True, className="demo-image")
                 if st.button("Select", key=f"demo_button_{i}"):
