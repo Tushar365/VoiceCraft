@@ -21,7 +21,7 @@ def report_response(resource, model):
                messages=[
         {
             "role": "assistant",
-            "content": "You are a talented satellite image analyst. Analyze the resourse data thoroughly and generate a detailed report suitable for text-to-speech, within 1000 tokens. the data {resource}"
+            "content": "You are a talented satellite image analyst. Analyze the resourse data and generate a highly detailed accurate report suitable for text-to-speech, within 1000 tokens. the data {resource}"
         },
         {
             "role": "user",
