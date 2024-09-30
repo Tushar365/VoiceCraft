@@ -26,11 +26,8 @@ def chat_response(client_prompt, resource, model="groq/chat/orca-mini-v3"):
                 {"role": "user", "content": f"Resource Data:\n\n{resource}"}, # Provide resource data separately
                 {"role": "user", "content": client_prompt}  # User's actual question
             ],
-            temperature=1,
+            temperature=0.7,
             max_tokens=200,
-            top_p=0.5,
-            stream=False,
-            stop=None,
         )
         return completion.choices[0].message.content
     except Exception as e:
