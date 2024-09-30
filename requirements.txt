@@ -1,5 +1,4 @@
 elevenlabs==0.2.27
-langchain-groq
 streamlit
 load_dotenv
-langchain
+groq

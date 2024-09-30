@@ -57,7 +57,6 @@ if __name__ =="__main__":
 
 ## chose model
 
-'''
 def choose_model():
     """Presents a menu of language models and returns the user's choice."""
 
@@ -78,4 +77,3 @@ def choose_model():
             return models[choice]["id"]
         else:
             print("Invalid choice. Please try again.")
-'''
