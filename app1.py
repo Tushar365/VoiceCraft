@@ -33,7 +33,12 @@ def choose_model():
     }
     selected_model_id = st.sidebar.selectbox("Select a Model:", list(models.keys()), format_func=models.get)
     return selected_model_id
-
+    
+def handle_demo_image(image_path, placeholder):  # Add placeholder argument
+    st.session_state.image_encoded = image_path
+    with open(image_path, "rb") as f:
+        # ... (rest of the handle_demo_image function)
+        placeholder.image(image_path, caption="Selected Demo Image", width=300)
 
 # --- Image Handling ---
 def process_image(image_bytes):
@@ -60,16 +65,11 @@ def main():
         os.path.join(demo_image_dir, f) for f in os.listdir(demo_image_dir) if os.path.isfile(os.path.join(demo_image_dir, f))
     ]
 
-    for i, image_path in enumerate(demo_images): #No need for columns now
+    for i, image_path in enumerate(demo_images):
         if os.path.exists(image_path):
             st.sidebar.image(image_path, width=100, caption="")
             if st.sidebar.button("Select", key=f"demo_button_{i}"):
-                with open(image_path, "rb") as f:
-                    image_bytes = f.read()
-                    st.session_state.source_data = process_image(image_bytes)
-                    # Display the selected demo image
-                    demo_image_placeholder.image(image_path, caption="Selected Demo Image", width=300)
-
+                handle_demo_image(image_path, demo_image_placeholder)
 
     # --- Image Upload ---
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
