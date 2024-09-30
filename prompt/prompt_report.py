@@ -21,16 +21,12 @@ def report_response(resource, model):
                messages=[
         {
             "role": "assistant",
-            "content": "You are a talented satellite image analyst. Analyze the provided data thoroughly and generate a detailed report suitable for text-to-speech, within 1000 tokens."
+            "content": "You are a talented satellite image analyst. Analyze the provided data thoroughly and generate a detailed report suitable for text-to-speech, within 1000 tokens. the data {resource}"
         },
         {
             "role": "user",
             "content": "your answers must be suitable for tts tools avoid * within 1000 tokens"
         },
-        {
-            "role": "user",
-            "content": f"Analyze:\n\n{resource}"
-        }
     ],
             #messages=[
             #    {"role": "system", "content": "You are a talented satellite image analyst. Analyze the provided data thoroughly and generate a detailed report suitable for text-to-speech, within 1000 tokens."},  # Combined instructions into system role
