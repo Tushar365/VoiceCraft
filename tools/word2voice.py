@@ -10,6 +10,6 @@ def generate_voice(text_results,voice_name):
     audio = generate(
     text=text_results,
     voice=voice_name,
-    model="eleven_turbo_v2.5")
+    model="eleven_multilingual_v2")
     return audio
 
