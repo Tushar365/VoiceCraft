@@ -70,7 +70,7 @@ def main():
     st.sidebar.subheader("⚙️ Settings")
     voice_enabled = st.sidebar.checkbox("Enable Voice Output", value=True)
 
-    available_voices = ["Charlie", "Alice", "Charlotte", "Sakuntala", "Sarah","Lily","Shrey","Eric"]  # Example voice list
+    available_voices = ["Charlie", "Alice", "Charlotte", "Sakuntala","Lily","Eric"]  # Example voice list
     voice_name = st.sidebar.selectbox("Select a voice", available_voices)
     
     
