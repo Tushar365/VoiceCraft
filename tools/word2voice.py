@@ -1,5 +1,5 @@
 
-def generate_voice(text_results):
+def generate_voice(text_results,voice_name):
     from dotenv import load_dotenv 
     load_dotenv()
     import os
@@ -9,7 +9,7 @@ def generate_voice(text_results):
         )
     audio = generate(
     text=text_results,
-    voice="Charlie",
-    model="eleven_multilingual_v1")
+    voice=voice_name,
+    model="eleven_turbo_v2.5")
     return audio
 

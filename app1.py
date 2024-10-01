@@ -69,6 +69,9 @@ def main():
     # --- Settings ---
     st.sidebar.subheader("⚙️ Settings")
     voice_enabled = st.sidebar.checkbox("Enable Voice Output", value=True)
+
+    available_voices = ["Charlie", "Alice", "Charlie", "Sakuntala", "Sarah","Lily","Shrey"]  # Example voice list
+    voice_name = st.sidebar.selectbox("Select a voice", available_voices)
     
     
 
@@ -101,7 +104,7 @@ def main():
                 st.write(response_text)
 
                 if voice_enabled:
-                    audio_result = generate_voice(response_text)
+                    audio_result = generate_voice(response_text,voice_name)
                     st.audio(audio_result, format="audio/wav")
 
             except Exception as e:
